@@ -1,4 +1,4 @@
-
+import Image from "next/image";
 import Button from "../ui/button";
 import AddressIcon from "../icons/address-icon";
 import ArrowRightIcon from "../icons/arrow-right-icon";
@@ -21,7 +21,7 @@ function EventItem({ event }) {
   const {item,content,summary,address,actions,icon} = classes;
   return (
     <li className={item}>
-      <img src={"/" + image} alt={title} />
+      <Image src={"/" + image} alt={title} width={250} height={160}/>
       <div className={content}>
         <div className={summary}>
           <h2>{title}</h2>

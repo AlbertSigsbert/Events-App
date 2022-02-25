@@ -5,11 +5,7 @@ function NewsletterRegistration() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
   const emailInputRef = useRef();
-  const validateEmail = (email) => {
-    return email.match(
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-  };
+  
   function registrationHandler(event) {
     event.preventDefault();
 
@@ -17,7 +13,6 @@ function NewsletterRegistration() {
     const enteredEmail = emailInputRef.current.value;
     // optional: validate input
 
-    if (validateEmail(enteredEmail)) {
       // send valid data to API
       fetch("/api/newsletter", {
         method: "POST",
@@ -29,14 +24,16 @@ function NewsletterRegistration() {
         .then((response) => response.json())
         .then((data) => {
           setIsRegistered(true);
-          data.message;
+          console.log(data);
+        }).catch((error) => {
+          console.log(error)
+          setIsInvalid(true);
         });
-    } else {
-      setIsInvalid(true);
-    }
+    
     return false;
   }
 
+  
   return (
     <section className={classes.newsletter}>
       <h2>Sign up to stay updated!</h2>

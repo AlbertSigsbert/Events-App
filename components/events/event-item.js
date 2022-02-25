@@ -16,12 +16,12 @@ function EventItem({ event }) {
   });
 
   const formattedAddress = location.replace(", ", "\n");
-  const exploreLink = `events/${id}`;
+  const exploreLink = `/events/${id}`;
   
   const {item,content,summary,address,actions,icon} = classes;
   return (
     <li className={item}>
-      <Image src={"/" + image} alt={title} width={250} height={160}/>
+      <Image src={"/" + image} alt={title} width={250} height={160} priority={true}/>
       <div className={content}>
         <div className={summary}>
           <h2>{title}</h2>

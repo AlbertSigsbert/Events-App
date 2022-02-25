@@ -1,7 +1,5 @@
 import Head from "next/head";
 import { Fragment } from "react";
-import fs from "fs";
-import path from "path";
 import { getFeaturedEvents, getEventById } from "../../components/helpers/util-api";
 import EventSummary from "../../components/event-detail/event-summary";
 import EventLogistics from "../../components/event-detail/event-logistics";
@@ -11,7 +9,7 @@ import Comments from "../../components/input/comments";
 
 function EventPage(props) {
   const event = props.selectedEvent;
-  const comments = props.selectedComments;
+  
   
 
   if (!event) {
@@ -35,7 +33,7 @@ function EventPage(props) {
       <EventContent>
         <p>{event.description}</p>
       </EventContent>
-      <Comments eventId={event.id} comments={comments}/>
+      <Comments eventId={event.id}/>
     </Fragment>
   );
 }
@@ -46,13 +44,8 @@ export async function getStaticProps(context){
   const event = await getEventById(eventId);
     
 
-  const filePath = path.join(process.cwd(), "data", "comments.json");
-  const fileData = fs.readFileSync(filePath);
-  const comments = JSON.parse(fileData);
-  const selectedComments = comments.filter((comment) => comment.eventId === eventId);
-
   return {
-    props:{selectedEvent:event, selectedComments},
+    props:{selectedEvent:event},
     revalidate:30
   }
 }

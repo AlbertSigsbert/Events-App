@@ -1,19 +1,23 @@
-function handler(req, res) {
+import { MongoClient } from "mongodb";
+
+const MONGODB_URI = process.env.MONGODB_URI;
+
+async function handler(req, res) {
   if (req.method === "POST") {
     const userEmail = req.body.email;
 
-    const validateEmail = (email) => {
-      return email.match(
-        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-    };
-
-    if (!validateEmail(userEmail)) {
+    
+    if (!userEmail || !userEmail.includes('@')) {
       res.status(422).json({ message: "Invalid Email Address" });
       return;
     }
 
-    console.log(userEmail);
+    const client = await MongoClient.connect(MONGODB_URI);
+    console.log('Connected successfully to server');
+    const db = client.db();
+    await db.collection('emails').insertOne({email:userEmail});
+    client.close();
+   
     res.status(201).json({ message: "Succesfully Registered" });
   }
   

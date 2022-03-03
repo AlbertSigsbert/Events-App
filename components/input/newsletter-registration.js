@@ -2,8 +2,7 @@ import classes from "./newsletter-registration.module.css";
 import { useRef, useState } from "react";
 
 function NewsletterRegistration() {
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [isInvalid, setIsInvalid] = useState(false);
+
   const emailInputRef = useRef();
   
   function registrationHandler(event) {
@@ -22,13 +21,8 @@ function NewsletterRegistration() {
         },
       })
         .then((response) => response.json())
-        .then((data) => {
-          setIsRegistered(true);
-          console.log(data);
-        }).catch((error) => {
-          console.log(error)
-          setIsInvalid(true);
-        });
+        .then((data) => {console.log(data);})
+        .catch((error) => {console.log(error)});
     
     return false;
   }
@@ -40,7 +34,7 @@ function NewsletterRegistration() {
       <form onSubmit={registrationHandler}>
         <div className={classes.control}>
           <input
-            type="text"
+            type="email"
             id="email"
             placeholder="Your email"
             aria-label="Your email"
@@ -49,16 +43,6 @@ function NewsletterRegistration() {
           <button>Subscribe</button>
         </div>
       </form>
-      {isRegistered && (
-        <div className={classes.success}>
-           You have succesfully subscribed to our newsletter.
-        </div>
-      )}
-      {isInvalid && (
-        <div className={classes.error}>
-           Please enter valid email address.
-        </div>
-      )}
     </section>
   );
 }

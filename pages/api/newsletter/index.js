@@ -1,6 +1,5 @@
-import { MongoClient } from "mongodb";
 
-const MONGODB_URI = process.env.MONGODB_URI;
+import { connectDatabase, insertDocument} from "../../../components/helpers/util-db";
 
 async function handler(req, res) {
   if (req.method === "POST") {
@@ -12,11 +11,27 @@ async function handler(req, res) {
       return;
     }
 
-    const client = await MongoClient.connect(MONGODB_URI);
-    console.log('Connected successfully to server');
-    const db = client.db();
-    await db.collection('emails').insertOne({email:userEmail});
-    client.close();
+    let client;
+
+    try {
+       client = await connectDatabase();
+    } catch (error) {
+      res.status(500).json({message:'Failed to connect to the Database.'});
+      return;
+    }
+   
+    try {
+      await insertDocument(client,'newsletter',{email:userEmail});
+      client.close();
+
+    } catch (error) {
+      res.status(500).json({message:'Failed to insert data.'});
+      return;
+    }
+    
+    
+  
+    
    
     res.status(201).json({ message: "Succesfully Registered" });
   }

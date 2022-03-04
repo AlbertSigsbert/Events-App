@@ -1,8 +1,20 @@
-import fs from "fs";
-import path from "path";
+import {
+  connectDatabase,
+  getAllDocuments,
+  insertDocument,
+} from "../../../components/helpers/util-db";
 
-function handler(req, res) {
+async function handler(req, res) {
   const eventId = req.query.eventId;
+
+  let client;
+
+  try {
+    client = await connectDatabase();
+  } catch (error) {
+    res.status(500).json({ message: "Failed to connect to the Database." });
+    return;
+  }
 
   if (req.method === "POST") {
     const { name, email, text } = req.body;
@@ -16,31 +28,35 @@ function handler(req, res) {
       !text ||
       !text.trim() === ""
     ) {
-      res.status(422).json({message: 'Invalid Input(s).'});
+      res.status(422).json({ message: "Invalid Input(s)." });
+      client.close();
       return;
     }
 
-    const newComment = {
-      id: new Date().toISOString(),
-      ...req.body,
-    };
-    const filePath = path.join(process.cwd(), "data", "comments.json");
-    const fileData = fs.readFileSync(filePath);
-    const data = JSON.parse(fileData);
-    data.push(newComment);
-    fs.writeFileSync(filePath, JSON.stringify(data));
+    const newComment = { ...req.body, eventId };
 
-    return res.status(201).json({ message: "Comment Posted Succesfully", comment: newComment });
+    let result;
+
+    try {
+      result = await insertDocument(client, "comments", newComment);
+      newComment._id = result.insertedId;
+      res
+        .status(201)
+        .json({ message: "Comment Posted Succesfully", comment: newComment });
+    } catch (error) {
+      res.status(500).json({ message: "Inserting comment failed." });
+    }
   }
-
 
   if (req.method === "GET") {
-    const filePath = path.join(process.cwd(), "data", "comments.json");
-    const fileData = fs.readFileSync(filePath);
-    const comments = JSON.parse(fileData);
-    const selectedComments = comments.filter((comment) => comment.eventId === eventId);
-
-    return res.status(200).json({  comments: selectedComments });
+    try {
+      const documents = await getAllDocuments(client, "comments", { _id: -1 },{ eventId: eventId });
+      res.status(200).json({ comments: documents });
+    } catch (error) {
+      res.status(500).json({ message: "Fetching comments failed." });
+    }
   }
+
+  client.close();
 }
 export default handler;

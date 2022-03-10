@@ -1,6 +1,7 @@
 import classes from "./comment-list.module.css";
 
 function CommentList({ comments }) {
+  
   return (
     <ul className={classes.comments}>
       {/* Render list of comments - fetched from API */}

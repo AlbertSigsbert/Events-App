@@ -1,4 +1,3 @@
-
 import { connectDatabase, insertDocument} from "../../../components/helpers/util-db";
 
 async function handler(req, res) {
@@ -28,11 +27,6 @@ async function handler(req, res) {
       res.status(500).json({message:'Failed to insert data.'});
       return;
     }
-    
-    
-  
-    
-   
     res.status(201).json({ message: "Succesfully Registered" });
   }
   
